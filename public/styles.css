@@ -77,6 +77,8 @@ img { max-width: 100%; }
 .lesson-num { flex: none; width: 34px; height: 34px; border-radius: 50%; background: var(--soft); color: var(--brand); font-weight: 800; display: grid; place-items: center; }
 .lesson-item[aria-current="true"] .lesson-num { background: var(--brand); color: #fff; }
 .lesson-item small { display: block; color: var(--muted); }
+.level-head { margin: 10px 0 2px; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.list-progress { margin: 0 0 4px; color: var(--muted); font-size: 14px; font-weight: 700; }
 .lesson-item .done { margin-left: auto; color: var(--accent); font-weight: 800; }
 .tag { display: inline-block; background: var(--soft); color: var(--brand); font-weight: 800; font-size: 13px; padding: 3px 10px; border-radius: 999px; }
 

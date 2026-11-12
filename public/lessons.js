@@ -14,9 +14,13 @@ function videoHtml(lesson) {
   return `<iframe src="${esc(lesson.video)}" title="${esc(lesson.title)}" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
 }
 
+const LEVEL_NAMES = { A1: "Beginner", A2: "Elementary", B1: "Intermediate" };
+
 function renderList(currentId) {
   const progress = Progress.get();
-  listEl.innerHTML = LESSONS.map((l, i) => `
+  const done = LESSONS.filter((l) => progress[l.id]).length;
+  listEl.innerHTML = `<p class="list-progress">${done} of ${LESSONS.length} lessons done</p>` + LESSONS.map((l, i) => `
+    ${i === 0 || LESSONS[i - 1].level !== l.level ? `<h3 class="level-head">${l.level} · ${LEVEL_NAMES[l.level] || ""}</h3>` : ""}
     <button class="lesson-item" data-id="${l.id}" aria-current="${l.id === currentId}">
       <span class="lesson-num">${i + 1}</span>
       <span><b>${esc(l.title)}</b><small>${l.level} · ${l.minutes} min</small></span>
@@ -73,7 +77,7 @@ function renderLesson(id) {
         box.querySelector(`[data-o="${q.answer}"]`).classList.add("correct");
         box.querySelector(".feedback").textContent = right ? "🎉 Great job!" : `Almost! The answer is: “${q.options[q.answer]}”`;
         if (right) correct++;
-        const answered = lessonEl.querySelectorAll(".option:disabled").length / 3;
+        const answered = [...lessonEl.querySelectorAll(".quiz-q")].filter((b) => b.querySelector(".option:disabled")).length;
         if (answered >= lesson.quiz.length && correct >= Math.ceil(lesson.quiz.length / 2)) {
           Progress.done(lesson.id);
           renderList(lesson.id);

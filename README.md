@@ -48,7 +48,7 @@ installed with access to this repository (GitHub → Settings → Applications �
 On the free plan the site sleeps after 15 minutes without visitors, so the first visit after that takes about 30–50 seconds.
 
 ## Features
-- 6 beginner lessons (A1–A2) with video, new words, and a quiz
+- 16 beginner lessons (9 at A1, 7 at A2) with video, new words, and a quiz, grouped by level with progress
 - 🔊 Listen button on every word and every Emma message (browser text-to-speech, free).
   Emma uses a female English voice when the device has one; students can pick another in ⚙️ on the chat page
 - 🎤 Speaking practice: tap the mic, speak (words appear as you talk), tap Stop, then **Send / Say it again / Edit**.
