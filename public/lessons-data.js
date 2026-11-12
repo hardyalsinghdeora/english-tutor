@@ -1,6 +1,7 @@
 // All lessons live here. To add a lesson, copy one block and change it.
+// examples: 3 short sentences Emma reads in the lesson video (the built-in narrated player).
 // video: paste a YouTube embed link (https://www.youtube.com/embed/VIDEO_ID)
-//        or a file path like "/videos/lesson1.mp4". Leave "" to show a placeholder.
+//        or a file path like "/videos/lesson1.mp4". Leave "" to use the built-in narrated player.
 (function () {
   const LESSONS = [
     {
@@ -10,6 +11,7 @@
       minutes: 5,
       summary: "Say hello, goodbye, and introduce yourself.",
       video: "",
+      examples: ["Hello! My name is Ana.", "Nice to meet you, Ana.", "Goodbye! See you tomorrow."],
       vocab: [
         { word: "Hello", meaning: "a friendly way to start talking" },
         { word: "Goodbye", meaning: "what you say when you leave" },
@@ -28,6 +30,7 @@
       minutes: 6,
       summary: "Use the verb “to be”: am, is, are.",
       video: "",
+      examples: ["I am a student.", "She is my teacher.", "We are from India."],
       vocab: [
         { word: "I am", meaning: "I'm — talking about yourself" },
         { word: "You are", meaning: "you're — talking to someone" },
@@ -47,6 +50,7 @@
       minutes: 5,
       summary: "Count from 1 to 20 and say how old you are.",
       video: "",
+      examples: ["I am twenty years old.", "My sister is fifteen.", "Three and four is seven."],
       vocab: [
         { word: "one, two, three", meaning: "1, 2, 3" },
         { word: "eleven, twelve", meaning: "11, 12" },
@@ -65,6 +69,7 @@
       minutes: 6,
       summary: "Name family members and use my, your, his and her.",
       video: "",
+      examples: ["This is my mother. Her name is Priya.", "My brother is ten years old.", "My uncle has two daughters."],
       vocab: [
         { word: "mother / father", meaning: "your parents" },
         { word: "brother / sister", meaning: "other children of your parents" },
@@ -86,6 +91,7 @@
       minutes: 6,
       summary: "Say the days of the week and tell the time with o'clock, half past and quarter.",
       video: "",
+      examples: ["What time is it? It's half past seven.", "I go to work on Monday.", "The class is at nine o'clock."],
       vocab: [
         { word: "Monday, Tuesday, Wednesday…", meaning: "the seven days of the week" },
         { word: "What time is it?", meaning: "how you ask for the time" },
@@ -107,6 +113,7 @@
       minutes: 7,
       summary: "Talk about what you do every day with the present simple.",
       video: "",
+      examples: ["I wake up at six o'clock.", "She has breakfast at eight.", "We go to bed at ten."],
       vocab: [
         { word: "wake up", meaning: "stop sleeping" },
         { word: "have breakfast", meaning: "eat in the morning" },
@@ -125,6 +132,7 @@
       minutes: 6,
       summary: "Describe rooms and things in your home with there is and there are.",
       video: "",
+      examples: ["There is a big table in the kitchen.", "There are three bedrooms in my house.", "Is there a garden? Yes, there is."],
       vocab: [
         { word: "There is…", meaning: "for one thing: There is a sofa." },
         { word: "There are…", meaning: "for two or more: There are two chairs." },
@@ -145,6 +153,7 @@
       minutes: 5,
       summary: "Name clothes and colours, and say what you are wearing.",
       video: "",
+      examples: ["I'm wearing a blue shirt.", "Her dress is red.", "My new shoes are black."],
       vocab: [
         { word: "shirt / T-shirt", meaning: "clothes for the top of your body" },
         { word: "trousers / jeans", meaning: "clothes for your legs" },
@@ -165,6 +174,7 @@
       minutes: 5,
       summary: "Talk about what you can and can't do.",
       video: "",
+      examples: ["I can swim, but I can't drive.", "Can you play the guitar? Yes, I can.", "My grandmother can speak English."],
       vocab: [
         { word: "I can swim.", meaning: "I am able to swim" },
         { word: "I can't drive.", meaning: "can't = cannot: I am not able to drive" },
@@ -185,6 +195,7 @@
       minutes: 6,
       summary: "Name common foods and order politely with “Can I have…?”",
       video: "",
+      examples: ["Can I have a cup of tea, please?", "Can I have a sandwich, please?", "How much is it? It's five dollars."],
       vocab: [
         { word: "Can I have…, please?", meaning: "a polite way to ask for something" },
         { word: "a cup of coffee", meaning: "one coffee" },
@@ -203,6 +214,7 @@
       minutes: 7,
       summary: "Ask where places are and understand left, right, and straight.",
       video: "",
+      examples: ["Excuse me, where is the bank?", "Go straight and turn left.", "The bank is next to the café."],
       vocab: [
         { word: "Excuse me, where is…?", meaning: "a polite way to ask for a place" },
         { word: "turn left / turn right", meaning: "change direction" },
@@ -221,6 +233,7 @@
       minutes: 7,
       summary: "Say what is happening right now with am, is or are + -ing.",
       video: "",
+      examples: ["I am reading a book right now.", "She is cooking dinner at the moment.", "What are you doing? I'm watching TV."],
       vocab: [
         { word: "I am reading.", meaning: "I'm doing it now" },
         { word: "She is cooking.", meaning: "she's doing it now" },
@@ -241,6 +254,7 @@
       minutes: 8,
       summary: "Talk about finished actions in the past with was/were, -ed verbs and common irregular verbs.",
       video: "",
+      examples: ["Yesterday I watched a film.", "We went to the beach last Sunday.", "Did you have breakfast? No, I didn't."],
       vocab: [
         { word: "yesterday / last week / two days ago", meaning: "words for past time" },
         { word: "was / were", meaning: "the past of am, is and are" },
@@ -261,6 +275,7 @@
       minutes: 6,
       summary: "Talk about future plans with going to.",
       video: "",
+      examples: ["I'm going to visit my aunt tomorrow.", "We are going to play football tonight.", "What are you going to do next week?"],
       vocab: [
         { word: "I'm going to visit my aunt.", meaning: "a plan you already made" },
         { word: "tomorrow / next week / tonight", meaning: "words for future time" },
@@ -280,6 +295,7 @@
       minutes: 7,
       summary: "Compare two things with -er, more and than.",
       video: "",
+      examples: ["A car is faster than a bike.", "My bag is bigger than your bag.", "This phone is more expensive than that one."],
       vocab: [
         { word: "big → bigger, cheap → cheaper", meaning: "short words: add -er" },
         { word: "easy → easier", meaning: "words ending in -y: change y to i, add -er" },
@@ -300,6 +316,7 @@
       minutes: 6,
       summary: "Say how you feel, describe simple health problems and understand advice.",
       video: "",
+      examples: ["What's the matter? I have a headache.", "I feel sick and I have a sore throat.", "You should rest and drink water."],
       vocab: [
         { word: "I have a headache.", meaning: "my head hurts" },
         { word: "I have a sore throat.", meaning: "my throat hurts" },

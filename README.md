@@ -22,8 +22,14 @@ It starts in **demo mode** with fixed answers. To turn on the real AI:
 
 Never put your key in the files inside `public/`, because everyone can see those.
 
-## Add your videos
-Open `public/lessons-data.js` and set `video:` for each lesson:
+## Lesson videos
+Every lesson has a built-in narrated "video" (`public/player.js`): Emma reads the lesson aloud with the
+browser's voice. It goes intro → each new word (listen, then "your turn" to say it) → the lesson's 3 example
+sentences (listen and repeat) → review → quiz, with play/pause, back/next, a clickable progress bar, captions
+and arrow-key controls. It is free, needs no video files, and uses the voice chosen in ⚙️ on the chat page.
+The slides are built from each lesson's `vocab` and `examples` in `public/lessons-data.js`.
+
+To use a real video instead (for example from HeyGen), set `video:` for that lesson:
 - YouTube: `"https://www.youtube.com/embed/VIDEO_ID"` (upload your HeyGen video as Unlisted)
 - Your own file: put it in `public/videos/` and use `"/videos/lesson1.mp4"`
 
@@ -48,7 +54,8 @@ installed with access to this repository (GitHub → Settings → Applications �
 On the free plan the site sleeps after 15 minutes without visitors, so the first visit after that takes about 30–50 seconds.
 
 ## Features
-- 16 beginner lessons (9 at A1, 7 at A2) with video, new words, and a quiz, grouped by level with progress
+- 16 beginner lessons (9 at A1, 7 at A2), each with a narrated lesson video, new words, example sentences and a quiz,
+  grouped by level with progress
 - 🔊 Listen button on every word and every Emma message (browser text-to-speech, free).
   Emma uses a female English voice when the device has one; students can pick another in ⚙️ on the chat page
 - 🎤 Speaking practice: tap the mic, speak (words appear as you talk), tap Stop, then **Send / Say it again / Edit**.

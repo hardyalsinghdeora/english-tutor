@@ -158,3 +158,54 @@ img { max-width: 100%; }
 .mic-btn.listening { color: #fff; }
 @media (prefers-color-scheme: dark) { .listening-bar { background: #4a2420; color: #ffd6cf; } }
 .video-placeholder img { display: block; margin: 0 auto 8px; }
+
+/* Narrated lesson player (player.js) */
+.video-box.player { position: relative; display: flex; flex-direction: column; color: #fff; container-type: inline-size;
+  background: radial-gradient(120% 120% at 0% 0%, #2c3d66 0%, #1e2a44 60%); outline: none; }
+.video-box.player:focus-visible { box-shadow: 0 0 0 3px var(--brand); }
+.stage { flex: 1; min-height: 0; display: flex; align-items: center; gap: 4cqw; padding: 4cqw 5cqw 2cqw; }
+.p-avatar { flex: none; border-radius: 50%; transition: box-shadow .2s; }
+.p-avatar img { display: block; width: clamp(64px, 17cqw, 150px); height: auto; }
+.p-avatar.talking { animation: p-ring 1s ease-out infinite; }
+.p-avatar.talking img { animation: p-talk .28s ease-in-out infinite alternate; }
+@keyframes p-ring { 0% { box-shadow: 0 0 0 0 rgba(242, 95, 76, .55); } 100% { box-shadow: 0 0 0 18px rgba(242, 95, 76, 0); } }
+@keyframes p-talk { from { transform: translateY(0) scale(1); } to { transform: translateY(-2px) scale(1.035); } }
+.p-content { flex: 1; min-width: 0; }
+.p-tag { display: inline-block; background: rgba(255, 255, 255, .12); color: #ffd2c9; font-weight: 800;
+  font-size: clamp(12px, 1.8cqw, 14px); padding: 3px 10px; border-radius: 999px; }
+.p-title { font-size: clamp(22px, 5.2cqw, 46px); font-weight: 800; line-height: 1.15; margin: 1.4cqw 0 1cqw; overflow-wrap: anywhere; }
+.p-intro .p-title { font-size: clamp(21px, 4.4cqw, 38px); }
+.p-example .p-title { font-size: clamp(19px, 3.9cqw, 34px); }
+.p-sub { font-size: clamp(14px, 2.4cqw, 20px); opacity: .85; }
+.p-list { columns: 2; column-gap: 24px; margin: 1cqw 0 0; padding-left: 1.1em; font-size: clamp(13px, 2.2cqw, 18px); }
+.p-quiz { margin-top: 2cqw; border: 0; cursor: pointer; font: inherit; font-weight: 800; font-size: clamp(13px, 2cqw, 16px);
+  background: #fff; color: #1e2a44; padding: 8px 16px; border-radius: 999px; }
+.p-caption { min-height: 2.8em; display: flex; align-items: center; justify-content: center; text-align: center;
+  padding: 6px 5cqw; font-size: clamp(13px, 2.1cqw, 17px); background: rgba(0, 0, 0, .22); transition: background .2s; }
+.your-turn .p-caption { background: var(--accent); font-weight: 800; }
+.your-turn .p-caption::before { content: "🗣 Your turn: "; margin-right: 4px; }
+.p-controls { display: flex; align-items: center; gap: 6px; padding: 8px 10px; background: rgba(0, 0, 0, .32); }
+.p-btn { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 0; cursor: pointer; font-size: 15px;
+  background: rgba(255, 255, 255, .13); color: #fff; }
+.p-btn:hover:not(:disabled) { background: rgba(255, 255, 255, .25); }
+.p-btn:disabled { opacity: .35; cursor: default; }
+.p-play { background: var(--brand); }
+.p-play:hover { background: var(--brand-dark) !important; }
+.p-track { flex: 1; min-width: 0; display: flex; gap: 3px; }
+.p-seg { flex: 1; height: 8px; padding: 0; border: 0; border-radius: 4px; cursor: pointer; background: rgba(255, 255, 255, .22); }
+.p-seg.done { background: var(--brand); }
+.p-count { flex: none; min-width: 3.4em; text-align: right; font-size: 13px; opacity: .8; font-variant-numeric: tabular-nums; }
+.p-start { position: absolute; inset: 0 0 52px 0; border: 0; cursor: pointer; color: #fff; font: inherit; font-weight: 800;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  background: rgba(14, 20, 36, .78); backdrop-filter: blur(3px); font-size: 18px; }
+.p-start-icon { width: 76px; height: 76px; border-radius: 50%; background: var(--brand); display: grid; place-items: center;
+  font-size: 30px; padding-left: 6px; box-shadow: 0 8px 30px rgba(0, 0, 0, .35); transition: transform .15s; }
+.p-start:hover .p-start-icon { transform: scale(1.06); }
+@media (max-width: 600px) {
+  .video-box.player { aspect-ratio: auto; min-height: 360px; }
+  .stage { flex-direction: column; text-align: center; justify-content: center; padding: 18px 16px 10px; gap: 10px; }
+  .p-list { columns: 1; text-align: left; display: inline-block; }
+  .p-controls { gap: 4px; padding: 8px; }
+  .p-btn { width: 34px; height: 34px; }
+}
+@media (prefers-reduced-motion: reduce) { .p-avatar.talking, .p-avatar.talking img { animation: none; } }

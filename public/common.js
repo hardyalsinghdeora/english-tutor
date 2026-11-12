@@ -12,7 +12,7 @@ const Voice = (() => {
   let voices = [];
 
   function load() {
-    if (!("speechSynthesis" in window)) return;
+    if (!window.speechSynthesis) return;
     voices = speechSynthesis.getVoices().filter((v) => v.lang.toLowerCase().startsWith("en"));
   }
   const isFemale = (v) => FEMALE.test(v.name) && !MALE.test(v.name.replace(/female/i, ""));
@@ -24,7 +24,7 @@ const Voice = (() => {
     const saved = Settings.get("voice", "");
     return voices.find((v) => v.name === saved) || [...voices].sort((a, b) => rank(a) - rank(b))[0] || null;
   }
-  if ("speechSynthesis" in window) {
+  if (window.speechSynthesis) {
     load();
     speechSynthesis.addEventListener?.("voiceschanged", () => { load(); document.dispatchEvent(new Event("voices-ready")); });
   }
@@ -39,7 +39,7 @@ const Voice = (() => {
 
 // Read text aloud in English. `onend` runs when Emma finishes speaking.
 function speak(text, onend) {
-  if (!("speechSynthesis" in window)) { alert("Sorry, your browser cannot read aloud."); return; }
+  if (!window.speechSynthesis) { alert("Sorry, your browser cannot read aloud."); return; }
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, ""));
   const v = Voice.current();

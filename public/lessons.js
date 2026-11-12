@@ -6,10 +6,7 @@ function esc(s) {
 }
 
 function videoHtml(lesson) {
-  if (!lesson.video) {
-    return `<div class="video-placeholder"><div><img src="/avatar.svg" alt="">
-      <b>Video coming soon</b><p>Add your HeyGen video link in lessons-data.js</p></div></div>`;
-  }
+  if (!lesson.video) return "";   // the narrated player is mounted here (player.js)
   if (/\.(mp4|webm)$/i.test(lesson.video)) return `<video src="${esc(lesson.video)}" controls playsinline></video>`;
   return `<iframe src="${esc(lesson.video)}" title="${esc(lesson.title)}" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
 }
@@ -28,7 +25,10 @@ function renderList(currentId) {
     </button>`).join("");
 }
 
+let player = null;
+
 function renderLesson(id) {
+  if (player) { player.destroy(); player = null; }
   const lesson = LESSONS.find((l) => l.id === id) || LESSONS[0];
   const index = LESSONS.indexOf(lesson);
   const next = LESSONS[index + 1];
@@ -39,7 +39,7 @@ function renderLesson(id) {
     <span class="tag">Lesson ${index + 1} · ${lesson.level}</span>
     <h1 style="margin:8px 0 4px">${esc(lesson.title)}</h1>
     <p style="margin:0;color:var(--muted)">${esc(lesson.summary)}</p>
-    <div class="video-box">${videoHtml(lesson)}</div>
+    <div class="video-box" id="video">${videoHtml(lesson)}</div>
 
     <h2>New words</h2>
     <div class="vocab">
@@ -50,7 +50,7 @@ function renderLesson(id) {
         </div>`).join("")}
     </div>
 
-    <h2>Quick quiz</h2>
+    <h2 id="quiz-title">Quick quiz</h2>
     <div id="quiz">
       ${lesson.quiz.map((q, qi) => `
         <div class="quiz-q" data-q="${qi}">
@@ -64,6 +64,11 @@ function renderLesson(id) {
       <a class="btn" href="/chat?lesson=${lesson.id}">💬 Practice this lesson with Emma</a>
       ${next ? `<button class="btn secondary" data-goto="${next.id}">Next lesson →</button>` : ""}
     </div>`;
+
+  if (!lesson.video) {
+    player = LessonPlayer.mount(document.getElementById("video"), lesson, index + 1,
+      () => document.getElementById("quiz-title").scrollIntoView({ behavior: "smooth" }));
+  }
 
   // Quiz logic
   let correct = 0;
@@ -90,7 +95,7 @@ function renderLesson(id) {
 
 document.addEventListener("click", (e) => {
   const say = e.target.closest("[data-say]");
-  if (say) return speak(say.dataset.say);
+  if (say) { player && player.pause(); return speak(say.dataset.say); }
   const item = e.target.closest(".lesson-item, [data-goto]");
   if (item) renderLesson(item.dataset.id || item.dataset.goto);
 });
