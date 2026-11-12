@@ -42,7 +42,9 @@ Open `public/lessons-data.js` and set `video:` for each lesson:
 3. Paste your Gemini key when it asks for `GEMINI_API_KEY`, then click **Apply**.
 4. After 1–2 minutes your site is live at `https://english-with-emma.onrender.com` (or a similar name).
 
-Every time you push to GitHub, Render updates the site automatically.
+Every time you push to GitHub, Render updates the site automatically. This needs the Render GitHub app
+installed with access to this repository (GitHub → Settings → Applications → Render → Configure; choose
+"Only select repositories" so Render can't see your other repos).
 On the free plan the site sleeps after 15 minutes without visitors, so the first visit after that takes about 30–50 seconds.
 
 ## Features
