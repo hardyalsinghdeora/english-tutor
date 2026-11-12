@@ -47,8 +47,12 @@ On the free plan the site sleeps after 15 minutes without visitors, so the first
 
 ## Features
 - 6 beginner lessons (A1–A2) with video, new words, and a quiz
-- 🔊 Listen button on every word and every Emma message (browser text-to-speech, free)
-- 🎤 Speaking practice: talk to Emma with your microphone (Chrome, Edge, Safari)
+- 🔊 Listen button on every word and every Emma message (browser text-to-speech, free).
+  Emma uses a female English voice when the device has one; students can pick another in ⚙️ on the chat page
+- 🎤 Speaking practice: tap the mic, speak (words appear as you talk), tap Stop, then **Send / Say it again / Edit**.
+  "Send automatically when I stop speaking" and "Emma reads her replies aloud" are options in ⚙️ (Chrome, Edge, Safari)
+- On startup the server sends one tiny test request to the AI and logs `AI check: OK` or the error, so a wrong key
+  or model name shows up in the host's logs right away
 - "Practice this lesson with Emma" focuses the chat on that lesson
 - Lesson progress saved in the browser (✓ marks)
 - Key is kept on the server, with a simple limit of 20 messages per minute per user

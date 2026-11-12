@@ -49,6 +49,7 @@ async function send(text) {
   text = text.trim();
   if (!text) return;
   input.value = "";
+  document.getElementById("confirm").hidden = true;
   chipsEl.innerHTML = "";
   addMessage("user", text);
   chatHistory.push({ role: "user", content: text });
@@ -68,6 +69,7 @@ async function send(text) {
     if (!res.ok) throw new Error(data.error);
     chatHistory.push({ role: "assistant", content: data.reply });
     addMessage("assistant", data.reply);
+    if (Settings.get("read", false)) speak(data.reply);
   } catch (err) {
     typing.remove();
     chatHistory.pop(); // let the student try again
@@ -80,23 +82,113 @@ async function send(text) {
 
 form.addEventListener("submit", (e) => { e.preventDefault(); send(input.value); });
 
-// Speaking practice: speech to text (Chrome, Edge, Safari)
+// ---------- Settings: Emma's voice, speed, reading aloud, auto-send
+const settingsBtn = document.getElementById("settings-btn");
+const settingsEl = document.getElementById("settings");
+const voiceSelect = document.getElementById("voice-select");
+const voiceHint = document.getElementById("voice-hint");
+
+settingsBtn.onclick = () => {
+  settingsEl.hidden = !settingsEl.hidden;
+  settingsBtn.setAttribute("aria-expanded", String(!settingsEl.hidden));
+};
+for (const [id, key, fallback] of [["opt-slow", "slow", true], ["opt-read", "read", false], ["opt-autosend", "autosend", false]]) {
+  const box = document.getElementById(id);
+  box.checked = Settings.get(key, fallback);
+  box.onchange = () => Settings.set(key, box.checked);
+}
+
+function fillVoices() {
+  const list = Voice.list();
+  const current = Voice.current();
+  voiceSelect.innerHTML = "";
+  for (const v of list) {
+    const label = `${v.name.replace(/^(Microsoft|Google)\s+/, "").replace(/\s+Online.*$/, "")} (${v.lang})${Voice.isFemale(v) ? " ♀" : ""}`;
+    voiceSelect.add(new Option(label, v.name, false, current && v.name === current.name));
+  }
+  voiceSelect.disabled = !list.length;
+  voiceHint.textContent = !list.length ? "This browser has no English voices to choose from."
+    : list.some(Voice.isFemale) ? "♀ marks female voices. Your choice is saved in this browser."
+    : "No female voice on this device, so Emma's voice is made a little higher. Try Chrome or Edge for more voices.";
+}
+voiceSelect.onchange = () => { Voice.choose(voiceSelect.value); speak("Hello! I am Emma, your English teacher."); };
+document.getElementById("voice-test").onclick = () => speak("Hello! I am Emma, your English teacher.");
+fillVoices();
+document.addEventListener("voices-ready", fillVoices);
+
+// ---------- Speaking practice: speech to text (Chrome, Edge, Safari)
+// Tap 🎤 → speak (words appear as you talk) → tap Stop → "Send this message?" → Send / Say it again / Edit.
+const listeningEl = document.getElementById("listening");
+const confirmEl = document.getElementById("confirm");
 const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
 if (Recognition) {
   const rec = new Recognition();
   rec.lang = "en-US";
-  rec.interimResults = false;
-  rec.onresult = (e) => { input.value = e.results[0][0].transcript; send(input.value); };
-  rec.onend = () => micBtn.classList.remove("listening");
-  micBtn.onclick = () => { micBtn.classList.add("listening"); rec.start(); };
+  rec.continuous = true;      // keep listening through short pauses
+  rec.interimResults = true;  // show the words while the student speaks
+  let listening = false;
+  let finalText = "";
+
+  const showConfirm = (show) => { confirmEl.hidden = !show; if (show) document.getElementById("confirm-send").focus(); };
+
+  function start() {
+    speechSynthesis.cancel();
+    finalText = "";
+    input.value = "";
+    showConfirm(false);
+    try { rec.start(); } catch { return; }
+    listening = true;
+    micBtn.classList.add("listening");
+    micBtn.textContent = "⏹";
+    micBtn.setAttribute("aria-label", "Stop listening");
+    micBtn.title = "Stop";
+    listeningEl.hidden = false;
+  }
+  function stop() { if (listening) rec.stop(); }
+
+  rec.onresult = (e) => {
+    let interim = "";
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const t = e.results[i][0].transcript;
+      if (e.results[i].isFinal) finalText += (finalText ? " " : "") + t.trim();
+      else interim += t;
+    }
+    input.value = (finalText + " " + interim).trim();
+  };
+  rec.onerror = (e) => {
+    if (e.error === "not-allowed" || e.error === "service-not-allowed") {
+      noticeEl.textContent = "The microphone is blocked. Allow it in the address bar, or type your message.";
+      noticeEl.hidden = false;
+    }
+  };
+  rec.onend = () => {
+    listening = false;
+    micBtn.classList.remove("listening");
+    micBtn.textContent = "🎤";
+    micBtn.setAttribute("aria-label", "Speak");
+    micBtn.title = "Speak in English";
+    listeningEl.hidden = true;
+    const text = input.value.trim();
+    if (!text) return;
+    if (Settings.get("autosend", false)) send(text);
+    else showConfirm(true);
+  };
+
+  micBtn.onclick = () => (listening ? stop() : start());
+  document.getElementById("confirm-send").onclick = () => { showConfirm(false); send(input.value); };
+  document.getElementById("confirm-again").onclick = () => start();
+  document.getElementById("confirm-edit").onclick = () => { showConfirm(false); input.focus(); };
+  input.addEventListener("input", () => showConfirm(false));
 } else {
   micBtn.hidden = true;
+  document.getElementById("opt-autosend").closest("label").hidden = true;
 }
 
 // Start
 fetch("/api/status").then((r) => r.json()).then((s) => {
   if (s.demo) {
-    noticeEl.textContent = "Demo mode: Emma gives simple fixed answers. Add an API key to the .env file for the real AI tutor.";
+    noticeEl.textContent = "Demo mode: Emma gives simple fixed answers. Add an AI key (GEMINI_API_KEY) on the server for the real AI tutor.";
     noticeEl.hidden = false;
   }
 }).catch(() => {});

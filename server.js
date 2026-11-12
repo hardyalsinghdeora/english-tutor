@@ -18,7 +18,7 @@ if (fs.existsSync(envPath)) {
 const PORT = Number(process.env.PORT) || 3000;
 const PROVIDER = (process.env.PROVIDER || "gemini").toLowerCase();
 const GEMINI_KEY = process.env.GEMINI_API_KEY || "";
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash";
 const OPENAI_KEY = process.env.OPENAI_API_KEY || "";
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
 
@@ -59,12 +59,17 @@ async function askGemini(messages, system) {
         role: m.role === "assistant" ? "model" : "user",
         parts: [{ text: m.content }],
       })),
-      generationConfig: { temperature: 0.7, maxOutputTokens: 400 },
+      // Newer Gemini models "think" before answering and that counts as output, so leave room for it.
+      // Emma's prompt keeps the visible reply short.
+      generationConfig: { temperature: 0.7, maxOutputTokens: 2048 },
     }),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error?.message || `Gemini error ${res.status}`);
-  return data.candidates?.[0]?.content?.parts?.map((p) => p.text).join("") || "Sorry, can you say that again?";
+  const candidate = data.candidates?.[0];
+  const text = candidate?.content?.parts?.filter((p) => !p.thought).map((p) => p.text || "").join("").trim();
+  if (!text) console.error("Gemini gave no text. finishReason:", candidate?.finishReason || data.promptFeedback?.blockReason);
+  return text || "Sorry, can you say that again?";
 }
 
 async function askOpenAI(messages, system) {
@@ -74,7 +79,7 @@ async function askOpenAI(messages, system) {
     body: JSON.stringify({
       model: OPENAI_MODEL,
       temperature: 0.7,
-      max_tokens: 400,
+      max_completion_tokens: 2048,
       messages: [{ role: "system", content: system }, ...messages],
     }),
   });
@@ -168,7 +173,23 @@ const server = http.createServer(async (req, res) => {
   });
 });
 
+// One tiny request at startup, so a wrong key or model name shows up in the logs right away.
+async function checkAI() {
+  try {
+    const messages = [{ role: "user", content: "Say hello in three words." }];
+    const reply = PROVIDER === "openai" ? await askOpenAI(messages, "Be brief.") : await askGemini(messages, "Be brief.");
+    console.log(`AI check: OK. Test reply: "${reply.slice(0, 80)}"`);
+  } catch (err) {
+    console.error(`AI check FAILED: ${err.message}`);
+  }
+}
+
 server.listen(PORT, () => {
   console.log(`English tutor running at http://localhost:${PORT}`);
-  console.log(DEMO_MODE ? "DEMO MODE: no API key found. Add one to .env for real AI replies." : `AI: ${PROVIDER} (${PROVIDER === "openai" ? OPENAI_MODEL : GEMINI_MODEL})`);
+  if (DEMO_MODE) {
+    console.log("DEMO MODE: no API key found. Add GEMINI_API_KEY (or OPENAI_API_KEY) for real AI replies.");
+  } else {
+    console.log(`AI: ${PROVIDER} (${PROVIDER === "openai" ? OPENAI_MODEL : GEMINI_MODEL})`);
+    checkAI();
+  }
 });
