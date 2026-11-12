@@ -51,8 +51,82 @@ function speak(text, onend) {
   speechSynthesis.speak(u);
 }
 
-// Lesson progress, saved in this browser only.
+// ---------- Student account ----------
+// Auth.ready resolves to { user, googleEnabled, dailyLimit, usedToday } (user is null when logged out).
+const Auth = (() => {
+  const loginHref = () => `/login?next=${encodeURIComponent(location.pathname + location.search)}`;
+  const ready = fetch("/api/auth/me", { credentials: "same-origin" })
+    .then((r) => (r.ok ? r.json() : { user: null }))
+    .catch(() => ({ user: null }));
+
+  async function logout() {
+    // This browser's progress belongs to the student who is leaving.
+    Settings.set("progress", {}); Settings.set("progress_owner", "");
+    await fetch("/api/auth/logout", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" }).catch(() => {});
+    location.reload();
+  }
+
+  // Header: "Log in" when logged out; the student's first name and a small menu when logged in.
+  function renderHeader(me) {
+    const slot = document.getElementById("account");
+    if (!slot) return;
+    slot.innerHTML = "";
+    if (!me.user) {
+      const a = document.createElement("a");
+      a.className = "btn login-btn"; a.href = loginHref(); a.textContent = "Log in";
+      slot.append(a);
+      return;
+    }
+    const first = me.user.name.split(" ")[0];
+    const btn = document.createElement("button");
+    btn.className = "account-btn"; btn.type = "button";
+    btn.setAttribute("aria-haspopup", "true"); btn.setAttribute("aria-expanded", "false");
+    const initial = document.createElement("span"); initial.className = "initial"; initial.textContent = first[0].toUpperCase();
+    const name = document.createElement("span"); name.className = "account-name"; name.textContent = first;
+    btn.append(initial, name);
+    const menu = document.createElement("div");
+    menu.className = "account-menu"; menu.hidden = true;
+    const who = document.createElement("p"); who.textContent = me.user.email;
+    const out = document.createElement("button"); out.type = "button"; out.textContent = "Log out"; out.onclick = logout;
+    menu.append(who, out);
+    btn.onclick = (e) => { e.stopPropagation(); menu.hidden = !menu.hidden; btn.setAttribute("aria-expanded", String(!menu.hidden)); };
+    document.addEventListener("click", (e) => { if (!slot.contains(e.target)) { menu.hidden = true; btn.setAttribute("aria-expanded", "false"); } });
+    slot.append(btn, menu);
+  }
+  ready.then(renderHeader);
+  return { ready, logout, loginHref };
+})();
+
+// ---------- Lesson progress ----------
+// Kept in this browser; when the student is logged in it is also saved to their account,
+// so it follows them to other devices. Lessons done before logging in are uploaded once.
 const Progress = {
   get() { return Settings.get("progress", {}); },
-  done(id) { const p = Progress.get(); p[id] = true; Settings.set("progress", p); },
+  done(id, score = 100) {
+    const p = Progress.get(); p[id] = true; Settings.set("progress", p);
+    Auth.ready.then((me) => me.user && Progress._post({ [id]: score }));
+  },
+  _post(lessons) {
+    return fetch("/api/progress", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ lessons }) })
+      .then((r) => (r.ok ? r.json() : null)).catch(() => null);
+  },
+  // Merges this browser's progress with the account's. Resolves to true when anything changed here.
+  async sync() {
+    const me = await Auth.ready;
+    if (!me.user) return false;
+    const owner = Settings.get("progress_owner", "");
+    // Lessons done here while logged out join the account; another student's never do.
+    const local = owner && owner !== me.user.id ? {} : Progress.get();
+    const res = await fetch("/api/progress").then((r) => (r.ok ? r.json() : null)).catch(() => null);
+    if (!res) return false;
+    const server = res.progress || {};
+    const missing = Object.keys(local).filter((id) => local[id] && !server[id]);
+    if (missing.length) await Progress._post(Object.fromEntries(missing.map((id) => [id, 100])));
+    const merged = { ...local };
+    for (const id of Object.keys(server)) merged[id] = true;
+    const before = JSON.stringify(Progress.get());
+    Settings.set("progress", merged);
+    Settings.set("progress_owner", me.user.id);
+    return JSON.stringify(merged) !== before;
+  },
 };

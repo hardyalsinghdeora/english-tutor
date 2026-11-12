@@ -64,9 +64,11 @@ async function send(text) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ messages: chatHistory, lessonId }),
     });
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     typing.remove();
-    if (!res.ok) throw new Error(data.error);
+    if (res.status === 401) { showLoginGate(); throw new Error(data.error || "Please log in to talk to Emma."); }
+    if (!res.ok) throw new Error(data.error || "Oops, something went wrong. Please try again.");
+    showUsage(data.usedToday, data.dailyLimit);
     chatHistory.push({ role: "assistant", content: data.reply });
     addMessage("assistant", data.reply);
     if (Settings.get("read", false)) speak(data.reply);
@@ -81,6 +83,26 @@ async function send(text) {
 }
 
 form.addEventListener("submit", (e) => { e.preventDefault(); send(input.value); });
+
+// ---------- Account: chatting needs a login (lessons don't)
+function showLoginGate() {
+  const next = encodeURIComponent(location.pathname + location.search);
+  document.getElementById("gate-login").href = `/login?next=${next}`;
+  document.getElementById("gate-signup").href = `/login?mode=signup&next=${next}`;
+  document.getElementById("login-gate").hidden = false;
+  form.hidden = true;
+  chipsEl.hidden = true;
+}
+function showUsage(used, limit) {
+  const el = document.getElementById("usage");
+  const left = limit - used;
+  el.hidden = !(limit && left <= 10);
+  el.textContent = left > 0 ? `${left} message${left === 1 ? "" : "s"} left today` : "No messages left today. See you tomorrow!";
+}
+Auth.ready.then((me) => {
+  if (!me.user) showLoginGate();
+  else showUsage(me.usedToday, me.dailyLimit);
+});
 
 // ---------- Settings: Emma's voice, speed, reading aloud, auto-send
 const settingsBtn = document.getElementById("settings-btn");

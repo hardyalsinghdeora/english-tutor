@@ -18,6 +18,7 @@
       <a href="/lessons">Lessons</a>
       <a href="/chat" aria-current="page">Talk to Emma</a>
     </nav>
+    <div class="account" id="account"></div>
   </div>
 </header>
 <main class="wrap chat-page">
@@ -48,6 +49,12 @@
       <button type="button" class="btn secondary" id="confirm-again">🎤 Say it again</button>
       <button type="button" class="btn secondary" id="confirm-edit">✏️ Edit</button>
     </div>
+    <div class="login-gate" id="login-gate" hidden>
+      <p>Log in or create a free account to talk to Emma.</p>
+      <a class="btn" id="gate-login" href="/login">Log in</a>
+      <a class="btn secondary" id="gate-signup" href="/login?mode=signup">Create free account</a>
+    </div>
+    <p class="usage" id="usage" hidden></p>
     <form class="composer" id="composer">
       <button type="button" class="mic-btn" id="mic" title="Speak in English" aria-label="Speak">🎤</button>
       <input id="input" autocomplete="off" maxlength="1000" placeholder="Write in English…" aria-label="Your message">

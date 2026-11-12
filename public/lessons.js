@@ -84,7 +84,7 @@ function renderLesson(id) {
         if (right) correct++;
         const answered = [...lessonEl.querySelectorAll(".quiz-q")].filter((b) => b.querySelector(".option:disabled")).length;
         if (answered >= lesson.quiz.length && correct >= Math.ceil(lesson.quiz.length / 2)) {
-          Progress.done(lesson.id);
+          Progress.done(lesson.id, Math.round((correct / lesson.quiz.length) * 100));
           renderList(lesson.id);
         }
       });
@@ -101,3 +101,8 @@ document.addEventListener("click", (e) => {
 });
 
 renderLesson(new URLSearchParams(location.search).get("id"));
+
+// Logged in: bring in progress saved on the account (other devices), and save this browser's.
+Progress.sync().then((changed) => {
+  if (changed) renderList(new URLSearchParams(location.search).get("id") || LESSONS[0].id);
+});

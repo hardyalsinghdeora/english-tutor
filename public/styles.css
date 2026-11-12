@@ -209,3 +209,57 @@ img { max-width: 100%; }
   .p-btn { width: 34px; height: 34px; }
 }
 @media (prefers-reduced-motion: reduce) { .p-avatar.talking, .p-avatar.talking img { animation: none; } }
+
+/* Header account */
+.site-header .wrap { gap: 12px; }
+.account { position: relative; flex: none; }
+.login-btn { padding: 8px 16px; font-size: 15px; }
+.account-btn { display: flex; align-items: center; gap: 8px; border: 2px solid var(--line); background: var(--card); color: var(--text);
+  border-radius: 999px; padding: 3px 12px 3px 3px; cursor: pointer; font: inherit; font-weight: 800; }
+.account-btn:hover, .account-btn[aria-expanded="true"] { border-color: var(--brand); }
+.initial { width: 30px; height: 30px; border-radius: 50%; background: var(--brand); color: #fff; display: grid; place-items: center; font-size: 15px; }
+.account-menu { position: absolute; right: 0; top: calc(100% + 8px); min-width: 220px; background: var(--card); border: 1px solid var(--line);
+  border-radius: 14px; box-shadow: var(--shadow); padding: 12px; z-index: 20; }
+.account-menu p { margin: 0 0 10px; color: var(--muted); font-size: 14px; overflow-wrap: anywhere; }
+.account-menu button { width: 100%; font: inherit; font-weight: 700; padding: 8px; border-radius: 10px; border: 2px solid var(--line);
+  background: transparent; color: var(--text); cursor: pointer; }
+.account-menu button:hover { border-color: var(--brand); color: var(--brand); }
+
+/* Login page */
+.auth-page { padding: 40px 16px 60px; display: grid; place-items: center; }
+.auth-card { width: 100%; max-width: 440px; padding: 28px; text-align: center; }
+.auth-avatar { width: 72px; height: 72px; }
+.auth-card h1 { margin: 8px 0 4px; font-size: 26px; }
+.auth-sub { margin: 0 0 18px; color: var(--muted); }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; background: var(--soft); border-radius: 12px; padding: 4px; margin-bottom: 16px; }
+.tabs button { font: inherit; font-weight: 800; border: 0; background: transparent; color: var(--muted); padding: 8px; border-radius: 9px; cursor: pointer; }
+.tabs button[aria-selected="true"] { background: var(--card); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+.google-btn { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 11px; border-radius: 999px;
+  border: 2px solid var(--line); color: var(--text); text-decoration: none; font-weight: 800; background: var(--card); }
+.google-btn:hover { border-color: var(--brand); }
+.or { display: flex; align-items: center; gap: 10px; margin: 14px 0; color: var(--muted); font-size: 14px; }
+.or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+#form { display: grid; gap: 12px; text-align: left; }
+.field { display: grid; gap: 4px; font-weight: 700; font-size: 15px; }
+.field input { font: inherit; font-weight: 400; padding: 11px 14px; border-radius: 12px; border: 2px solid var(--line); background: var(--bg); color: var(--text); width: 100%; }
+.field input:focus { outline: none; border-color: var(--brand); }
+.password { position: relative; display: block; }
+.password input { padding-right: 70px; }
+.show-pw { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); border: 0; background: transparent; color: var(--brand);
+  font: inherit; font-weight: 800; font-size: 14px; cursor: pointer; padding: 6px 8px; }
+.form-error { margin: 0; padding: 10px 12px; border-radius: 10px; background: #fde8ec; color: #9f1239; font-size: 15px; }
+.btn.wide { width: 100%; justify-content: center; }
+.auth-note { margin: 16px 0 0; color: var(--muted); font-size: 14px; }
+.signed-in { display: grid; gap: 10px; justify-items: center; }
+.signed-in p { margin: 0 0 4px; }
+
+/* Chat: login gate and daily usage */
+.login-gate { margin: 0 18px 12px; padding: 14px 16px; border-radius: 14px; background: var(--soft); display: flex; flex-wrap: wrap;
+  gap: 10px; align-items: center; }
+.login-gate p { margin: 0; flex: 1 1 220px; font-weight: 700; }
+.usage { margin: 0 18px 8px; font-size: 14px; color: var(--muted); text-align: right; }
+@media (max-width: 760px) {
+  .account-name { display: none; }
+  .account-btn { padding: 3px; }
+  .login-btn { padding: 7px 12px; font-size: 14px; }
+}

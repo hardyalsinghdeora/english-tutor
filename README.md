@@ -33,6 +33,39 @@ To use a real video instead (for example from HeyGen), set `video:` for that les
 - YouTube: `"https://www.youtube.com/embed/VIDEO_ID"` (upload your HeyGen video as Unlisted)
 - Your own file: put it in `public/videos/` and use `"/videos/lesson1.mp4"`
 
+## Student accounts
+Students sign up with email and password, or with Google. Logged-in students can talk to Emma (up to
+`DAILY_MESSAGES` messages a day, default 100) and their finished lessons are saved to their account, so
+progress follows them to any device. Lessons and lesson videos stay open to everyone.
+
+| Setting (environment variable) | What it is |
+|---|---|
+| `DATABASE_URL` | Postgres connection string where accounts are stored, e.g. from [Neon](https://neon.tech) (free). Without it, a local file `data/dev.db` is used: fine on your computer, but **on Render it is wiped on every deploy**. |
+| `SESSION_SECRET` | A long random string that signs login cookies (at least 32 characters). Required on Render. |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Turn on "Continue with Google" (see below). Optional. |
+| `DAILY_MESSAGES` | Chat messages per student per day (default 100). |
+
+**Neon (free Postgres):** sign up at neon.tech → create a project → copy the connection string
+(`postgresql://…?sslmode=require`) → add it on Render as `DATABASE_URL`. Tables are created automatically.
+
+**Google sign-in:** in [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services →
+OAuth consent screen (External, app name "English with Emma") → Credentials → Create credentials →
+OAuth client ID → Web application. Add the authorised redirect URI
+`https://<your-site>/auth/google/callback` (for this site: `https://english-with-emma.onrender.com/auth/google/callback`),
+then put the client ID and secret on Render as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
+
+How it's built: passwords are hashed with scrypt; logins are HttpOnly, SameSite cookies signed with
+`SESSION_SECRET`; sign-up and log-in are limited to 10 tries per 10 minutes per address; account APIs accept
+JSON only. Code: `lib/db.js` (Postgres or SQLite), `lib/auth.js`, routes in `server.js`, page `public/login.html`.
+
+## Tests
+```
+npm install
+npm test
+```
+Runs the server against a temporary SQLite file and checks sign-up, log-in, Google sign-in (with a fake
+Google), chat limits and progress. Set `TEST_DATABASE_URL=postgres://…` to run everything against Postgres too.
+
 ## Change things
 | What | File |
 |---|---|

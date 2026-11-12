@@ -4,7 +4,7 @@ services:
     name: english-with-emma
     runtime: node
     plan: free
-    buildCommand: "echo no build needed"
+    buildCommand: npm ci --omit=dev
     startCommand: node server.js
     healthCheckPath: /api/status
     envVars:
@@ -14,3 +14,11 @@ services:
         value: gemini-3.5-flash-lite
       - key: GEMINI_API_KEY
         sync: false   # Render asks you to paste this secret
+      - key: SESSION_SECRET
+        generateValue: true   # random secret that signs login cookies
+      - key: DATABASE_URL
+        sync: false   # Postgres connection string, e.g. from neon.tech (free)
+      - key: GOOGLE_CLIENT_ID
+        sync: false   # optional: "Continue with Google"
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
